@@ -1,11 +1,11 @@
 const express = require('express');
+require("dotenv").config();
 const client = require('./dbpg.js');
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 
-const bodyParser = require("body-parser");
-app.use(bodyParser.json());
+app.use(express.json());
 
 // TODO set routes and controllers structure
 
@@ -14,15 +14,22 @@ app.get('/reviews', (req, res)=>{
   let getQuery = `Select * from public.reviews
   ORDER BY id ASC LIMIT 100`;
 
-  let getQuery2 = `SELECT public.reviews, json_agg(json_build_object('id', id, 'url', url)) AS agg
-  FROM public.reviews_photos JOIN (
-  SELECT code FROM project
-  ) AS p ON p.code=activity.pcode
-  GROUP BY pid;`;
+  let getQuery2 = `Select * from public.reviews_photos
+  ORDER BY id ASC LIMIT 100`;
+
+  let getQuery3 = `SELECT *, json_agg(json_build_object('id', id, 'url', url)) AS agg
+  FROM public.reviews JOIN (
+  SELECT * FROM reviews_photos
+  ) AS photos ON reviews=public.reviews_photos
+  GROUP BY public.reviews`;
+
 
   client.query(getQuery, (err, result)=>{
       if(!err){
           res.send(result.rows);
+      } else {
+        console.log(err.message);
+        res.send(err.message);
       }
   });
   client.end;
