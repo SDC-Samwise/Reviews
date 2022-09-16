@@ -4,43 +4,80 @@ const client = require('./dbpg.js');
 const app = express();
 const port = process.env.PORT || 3000;
 
+//import dateFormat from 'dateformat';
+//const formattedDate = dateFormat(date, 'dddd, mmmm dS, yyyy');
 
 app.use(express.json());
 
 // TODO set routes and controllers structure
-
+// reviews should not return anything if not passed product_id
 app.get('/reviews', (req, res)=>{
+  let data = 'Error: invalid product_id provided';
+  res.status(422).send(data);
+})
 
-  let getQuery = `Select * from public.reviews
-  ORDER BY id ASC LIMIT 100`;
+app.get('/reviews/:id', (req, res)=>{
 
-  let getQuery2 = `Select * from public.reviews_photos
-  ORDER BY id ASC LIMIT 100`;
+  let offset = `
+  select az.*, COALESCE(json_agg(json_build_object('id', ap.id, 'url', ap.url))
+FILTER (WHERE ap.id IS NOT NULL), '[]') photos
+from reviews az
+left join reviews_photos ap on ap.review_id=az.id where az.id = ap.review_id
+group by az.id
+limit 5
+OFFSET 3`
 
-  let getQuery3 = `SELECT *, json_agg(json_build_object('id', id, 'url', url)) AS agg
-  FROM public.reviews JOIN (
-  SELECT * FROM reviews_photos
-  ) AS photos ON reviews=public.reviews_photos
-  GROUP BY public.reviews`;
+  let getQuery = `select az.*, COALESCE(json_agg(json_build_object('id', ap.id, 'url', ap.url))
+    FILTER (WHERE ap.id IS NOT NULL), '[]') photos
+    from reviews az
+    left join reviews_photos ap on ap.review_id=az.id where az.product_id = ${req.params.id}
+    group by az.id`;
 
+    let getQuery2 = `select az.*, COALESCE(json_agg(json_build_object('id', ap.id, 'url', ap.url))
+    FILTER (WHERE ap.id IS NOT NULL), '[]') photos
+      from reviews az
+      left join reviews_photos ap on ap.review_id=az.id where az.id = 1
+      group by az.id
+      limit 5
+      OFFSET 3`;
 
   client.query(getQuery, (err, result)=>{
       if(!err){
-          res.send(result.rows);
-      } else {
-        console.log(err.message);
-        res.send(err.message);
+        let data = {
+          products: parseInt(req.params.id) || 1,
+          page: parseInt(req.params.page) || 0,
+          count: parseInt(req.params.count) || 5,
+          results: result.rows
+        };
+
+          res.send(data);
       }
   });
   client.end;
 })
 
-app.get('/reviews/:id', (req, res)=>{
-  client.query(`Select * from public.reviews
-  where id=${req.params.id}`, (err, result)=>{
-      if(!err){
-          res.send(result.rows);
-      }
+
+app.get('/reviews/meta', (req, res)=>{
+  let data = 'Error: invalid meta? provided';
+  res.status(422).send(data);
+})
+
+app.get('/reviews/meta/:id', (req, res)=>{
+
+    let getQuery = `select az.*, COALESCE(json_agg(json_build_object('id', ap.id, 'url', ap.url))
+    FILTER (WHERE ap.id IS NOT NULL), '[]') photos
+    from reviews az
+    left join reviews_photos ap on ap.review_id=az.id where az.product_id = ${req.params.id}
+    group by az.id`;
+
+  client.query(getQuery, (err, result)=>{
+    if(!err){
+      let data = {
+        products: parseInt(req.params.id) || 1,
+        results: result.rows
+      };
+        res.send(data);
+    }
   });
   client.end;
 })
@@ -85,7 +122,7 @@ app.put('/reviews/:id/helpful', (req, res)=> {
 })
 
 app.delete('/reviews/:id', (req, res)=> {
-  let insertQuery = `delete from users where id=${req.params.id}`
+  let insertQuery = `delete from reviews where id=${req.params.id}`
 
   client.query(insertQuery, (err, result)=>{
       if(!err){
