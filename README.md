@@ -36,4 +36,5 @@ After these improvements, I deployed the service to AWS for cloud performance te
 To solve this, I implemented horizontal scaling using a Load Balancer instance with Round Robin algorithm using 5 hosts, servers.
 
 ## Results:
+![servers](https://i.ibb.co/VD5v3tm/random-fix-bug.png)
 ![servers](https://i.ibb.co/LQN9XkP/5-server.png)
