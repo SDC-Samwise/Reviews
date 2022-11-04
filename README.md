@@ -1,40 +1,55 @@
 # Ratings And Reviews Backend Microservice
 
-Atelier is a backend microservice for an E-Commerce website which was scaled in AWS EC2 using an Nginx Load Balancing Server, 4 host servers and PostgreSQL database. It supports 5K virtual clients with response latency of 65ms (down from 500ms+).
+Atelier is a backend microservice for an E-Commerce website which was scaled in AWS EC2 using an Nginx Load Balancing Server, 4 host servers and PostgreSQL database.
 
-## Details
+## Links
 
-### Step 1: API Endpoints and Local testing
-After creating all the API endpoints and routes, local benchmarks for each endpoint averaged around 800ms. After indexing, query speeds increased from 3 seconds to 50ms (using PgAdmin) and 10ms (using Postman). Local stress test with K6 shows that the breakpoint was at 500RPS.
+- [Repo](https://github.com/SDC-Samwise/Reviews "Ratings And Reviews Repo")
 
-### Query Results
+- [Bugs](https://github.com/SDC-Samwise/Reviews/issues "Issues Page")
 
-| Indexing | Time          |
-| :---     | :----:        |
-| Without  | 3.131 seconds |
-| With/PgAdmin     | 0.045 seconds |
-| With/Postman     | 0.010 seconds |
 
-### Step 2: Stress Testing with K6
-Doing local testing with K6, I found a bottleneck when running different routes simultaneously, this lead me to modify the server logic accordingly, 
-changing from static connection to dynamic list/pool.
+## Available Commands
 
-![client](https://i.ibb.co/R6Xc5Rh/client2.png)
+In the project directory, you can run:
 
-### Results
+### `"npm run test"`,
 
-![pool](https://i.ibb.co/vwGP2Hr/pool.png)
+Launches the test runner in the interactive watch mode.
 
-## Step 2: Deployment and Cloud Based Testing
-After these improvements, I deployed the service to AWS for cloud performance tests. then, I found that when hitting a large amount of virtual users per second, the queries speed were higher than 200ms and the error rate was at about 4,9%.
+### `npm run start"`
 
-### Stress Test
-![server](https://i.ibb.co/F3TgYb3/1-server.png)
+## Built With
 
-## Step 3: Scaling
+- NodeJS
+- NPM
+- PostgreSQL
 
-To solve this, I implemented horizontal scaling using a Load Balancer instance with Round Robin algorithm using 5 hosts, servers.
+## Future Updates
 
-## Results:
-![servers](https://i.ibb.co/VD5v3tm/random-fix-bug.png)
-![servers](https://i.ibb.co/LQN9XkP/5-server.png)
+- Implement server-side caching
+
+## Authors
+
+Manuel Tiburcio
+
+[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/manueltiburcio)
+
+[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:manuelmtiburcio@gmail.com)
+
+[![Linkedin](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/manueltiburcio/)
+
+## 🤝 Support
+
+Contributions, issues, and feature requests are welcome!
+
+Give a ⭐️ if you like this project!
+
+## Technologies and Resources
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
+![image]( https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white )
+![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
+![image]( https://img.shields.io/badge/Trello-%23026AA7.svg?style=for-the-badge&logo=Trello&logoColor=white )
+![image]( https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white )
