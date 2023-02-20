@@ -1,55 +1,39 @@
 # Ratings And Reviews Backend Microservice
 
-Atelier is a backend microservice for an E-Commerce website which was scaled in AWS EC2 using an Nginx Load Balancing Server, 4 host servers and PostgreSQL database.
+Atelier is a backend microservice for an ECommerce website which was scaled in AWS EC2 using an Nginx Load Balancing Server, 4 host servers and PostgreSQL database. Currenctly response times run under 70ms (down from 500ms+).
 
-## Links
+## Step 1: Relational Database Schema and Testing
 
-- [Repo](https://github.com/SDC-Samwise/Reviews "Ratings And Reviews Repo")
+After examining what the microservice data sets is going to provide, I designed a relational schema to run with PostgreSQL.
 
-- [Bugs](https://github.com/SDC-Samwise/Reviews/issues "Issues Page")
+### Relational Database Schema
 
+![schema](images/Reviews_Schema.png)
 
-## Available Commands
+## Step 2: Local Stress Testing
 
-In the project directory, you can run:
+After inherit an amount of 10 million records, local benchmarks for the service was averaged around 12.5 seconds. After indexing, query speeds were reduced to an approximately 85ms (using PgAdmin) and 53ms (using Postman). Local stress test was done with K6.io
 
-### `"npm run test"`,
+### Query Results
 
-Launches the test runner in the interactive watch mode.
+| Indexing     |     Time      |
+| :----------- | :-----------: |
+| Without      | 12.5 seconds  |
+| With/PgAdmin | 0.085 seconds |
+| With/Postman | 0.053 seconds |
 
-### `npm run start"`
+### K6.io Testing
 
-## Built With
+![k6](images/pool.png)
 
-- NodeJS
-- NPM
-- PostgreSQL
+## Step 3: Horizontal Scaling using Nginx Load Balancer with Round Robin algorithm hosting 5 servers on AWS
 
-## Future Updates
+Created 4 additional AWS EC2 t2.micro instances to increase throughput by 90% by horizontally scaling utilizing NGINX loadbalancer to improve site performance and obtain a response time of under 70ms.
 
-- Implement server-side caching
+### Initial Horizontal Scaling Diagram
 
-## Authors
+![diagram](images/diagram.png)
 
-Manuel Tiburcio
+### 5 Servers simultaneously:
 
-[![GitHub](https://img.shields.io/badge/github-%23121011.svg?style=for-the-badge&logo=github&logoColor=white)](https://github.com/manueltiburcio)
-
-[![Gmail](https://img.shields.io/badge/Gmail-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:manuelmtiburcio@gmail.com)
-
-[![Linkedin](https://img.shields.io/badge/linkedin-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/manueltiburcio/)
-
-## 🤝 Support
-
-Contributions, issues, and feature requests are welcome!
-
-Give a ⭐️ if you like this project!
-
-## Technologies and Resources
-![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
-![image]( https://img.shields.io/badge/Postman-FF6C37?style=for-the-badge&logo=Postman&logoColor=white )
-![Express.js](https://img.shields.io/badge/express.js-%23404d59.svg?style=for-the-badge&logo=express&logoColor=%2361DAFB)
-![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
-![NodeJS](https://img.shields.io/badge/node.js-6DA55F?style=for-the-badge&logo=node.js&logoColor=white)
-![image]( https://img.shields.io/badge/Trello-%23026AA7.svg?style=for-the-badge&logo=Trello&logoColor=white )
-![image]( https://img.shields.io/badge/ESLint-4B3263?style=for-the-badge&logo=eslint&logoColor=white )
+![servers](images/servers.gif)
